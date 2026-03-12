@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Badminton Court Booking</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Badminton Court Booking</h1>
+
+<input type="date" id="date">
+
+<div class="timeline-container">
+
+<div class="timeline-header" id="timelineHeader"></div>
+
+<div id="timeline"></div>
+
+</div>
+
+
+<!-- BOOKING POPUP -->
+<div id="popupOverlay" class="popup-overlay hidden"></div>
+<div id="bookingPopup" class="popup hidden">
+
+<div class="popup-header">
+<h3 id="popupCourt">Court</h3>
+<p id="popupStart">Start Time</p>
+
+<div id="countdown" class="countdown">
+Time remaining: 01:00
+</div>
+</div>
+
+
+<div class="popup-body">
+
+<label for="endTime">End Time</label>
+<select id="endTime"></select>
+
+<p id="price"></p>
+
+<input id="name" placeholder="Name">
+
+<input id="phone" type="tel" placeholder="Phone" inputmode="numeric">
+<div id="phoneError" style="color:red;font-size:14px;margin-top:4px;"></div>
+
+</div>
+
+
+<div class="popup-actions">
+
+<button id="confirmBooking">Confirm Booking</button>
+
+<button onclick="closePopup()">Cancel</button>
+
+</div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
