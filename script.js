@@ -42,6 +42,25 @@ const d = new Date(date)
 return d.toISOString().split("T")[0]
 }
 
+const LIFF_ID = "2009443961-MV2dzoDm"
+
+let lineUserId = ""
+
+async function initLIFF(){
+
+await liff.init({ liffId: LIFF_ID })
+
+if(!liff.isLoggedIn()){
+liff.login()
+}
+
+const profile = await liff.getProfile()
+
+lineUserId = profile.userId
+
+}
+
+initLIFF()
 
 function isBooked(court,date,time){
 
@@ -404,6 +423,7 @@ start:selectedStart,
 end:end,
 name:name,
 phone:phone,
+lineUserId:lineUserId,
 price:price,
 status:"BOOKED"
 })
