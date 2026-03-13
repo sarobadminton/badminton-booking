@@ -437,6 +437,9 @@ console.log("Sending LINE ID:", lineUserId)
 
 await fetch(API,{
 method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
 body:JSON.stringify({
 court:selectedCourt,
 date:dateInput.value,
@@ -444,12 +447,12 @@ start:selectedStart,
 end:end,
 name:name,
 phone:phone,
-lineUserId:lineUserId,
+lineUserId: lineUserId,
 price:price,
 status:"BOOKED"
 })
 })
-
+console.log("LINE ID SENT:", lineUserId)
 alert("Booking confirmed")
 
 closePopup()
