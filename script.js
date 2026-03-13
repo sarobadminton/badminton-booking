@@ -10,7 +10,8 @@ try{
 
 await liff.init({ liffId: LIFF_ID })
 
-if(liff.isInClient()){
+console.log("isInClient:", liff.isInClient())
+console.log("isLoggedIn:", liff.isLoggedIn())
 
 if(!liff.isLoggedIn()){
 liff.login()
@@ -18,16 +19,11 @@ return
 }
 
 const profile = await liff.getProfile()
+
 lineUserId = profile.userId
 liffReady = true
 
 console.log("LINE USER:", lineUserId)
-
-}else{
-
-console.log("Opened outside LINE")
-
-}
 
 }catch(err){
 
@@ -35,7 +31,6 @@ console.log("LIFF ERROR:", err)
 
 }
 
-// ALWAYS start booking system
 init()
 
 }
