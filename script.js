@@ -2,16 +2,13 @@ const API = "https://script.google.com/macros/s/AKfycbyf4-Y4ZbI8eBuokdPT0ZXdnmjH
 const LIFF_ID = "2009443961-MV2dzoDm"
 
 let lineUserId = ""
-let liffReady = false
+
 
 async function initLIFF(){
 
 try{
 
 await liff.init({ liffId: LIFF_ID })
-
-console.log("isInClient:", liff.isInClient())
-console.log("isLoggedIn:", liff.isLoggedIn())
 
 if(!liff.isLoggedIn()){
 liff.login()
@@ -21,7 +18,6 @@ return
 const profile = await liff.getProfile()
 
 lineUserId = profile.userId
-liffReady = true
 
 console.log("LINE USER:", lineUserId)
 
