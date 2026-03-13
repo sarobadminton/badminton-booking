@@ -6,10 +6,14 @@ let liffReady = false
 
 async function initLIFF(){
 
+try{
+
 await liff.init({ liffId: LIFF_ID })
 
+// if not opened in LINE just continue
 if(!liff.isInClient()){
-alert("Please open this booking page inside the LINE app.")
+console.log("Opened outside LINE")
+init()
 return
 }
 
@@ -22,11 +26,18 @@ const profile = await liff.getProfile()
 
 lineUserId = profile.userId
 
-liffReady = true
-
 console.log("LINE USER:", lineUserId)
 
+liffReady = true
+
+}catch(err){
+
+console.log("LIFF ERROR:", err)
+
 }
+
+// start booking system after LIFF finishes
+init()
 
 }
 
@@ -492,4 +503,3 @@ phoneError.innerText = ""
 
 })
 
-init()
