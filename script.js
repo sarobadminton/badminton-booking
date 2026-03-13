@@ -10,12 +10,7 @@ try{
 
 await liff.init({ liffId: LIFF_ID })
 
-// if not opened in LINE just continue
-if(!liff.isInClient()){
-console.log("Opened outside LINE")
-init()
-return
-}
+if(liff.isInClient()){
 
 if(!liff.isLoggedIn()){
 liff.login()
@@ -23,12 +18,16 @@ return
 }
 
 const profile = await liff.getProfile()
-
 lineUserId = profile.userId
+liffReady = true
 
 console.log("LINE USER:", lineUserId)
 
-liffReady = true
+}else{
+
+console.log("Opened outside LINE")
+
+}
 
 }catch(err){
 
@@ -36,12 +35,13 @@ console.log("LIFF ERROR:", err)
 
 }
 
-// start booking system after LIFF finishes
+// ALWAYS start booking system
 init()
 
 }
 
 initLIFF()
+
 let selectedCourt
 let selectedStart
 let bookings = []
@@ -402,9 +402,8 @@ document.getElementById("price").innerText="Price: "+price+" ฿"
 
 document.getElementById("confirmBooking").onclick = async function(){
 
-if(!liffReady || !lineUserId){
-alert("Please open this page inside LINE to complete booking.")
-return
+if(!lineUserId){
+alert("Please open this page inside LINE to receive LINE confirmation message.")
 }
 
 const end = document.getElementById("endTime").value
