@@ -1,5 +1,23 @@
 const API = "https://script.google.com/macros/s/AKfycbyf4-Y4ZbI8eBuokdPT0ZXdnmjHcBrq2nfOh_ciRM_xnRU4YmNjEIxCyFMZbtpVYwVI/exec"
+const LIFF_ID = "2009443961-MV2dzoDm"
 
+let lineUserId = ""
+
+async function initLIFF(){
+
+await liff.init({ liffId: LIFF_ID })
+
+if(!liff.isLoggedIn()){
+liff.login()
+}
+
+const profile = await liff.getProfile()
+
+lineUserId = profile.userId
+
+}
+
+initLIFF()
 let selectedCourt
 let selectedStart
 let bookings = []
@@ -42,25 +60,7 @@ const d = new Date(date)
 return d.toISOString().split("T")[0]
 }
 
-const LIFF_ID = "2009443961-MV2dzoDm"
 
-let lineUserId = ""
-
-async function initLIFF(){
-
-await liff.init({ liffId: LIFF_ID })
-
-if(!liff.isLoggedIn()){
-liff.login()
-}
-
-const profile = await liff.getProfile()
-
-lineUserId = profile.userId
-
-}
-
-initLIFF()
 
 function isBooked(court,date,time){
 
