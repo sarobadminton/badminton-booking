@@ -392,6 +392,11 @@ document.getElementById("price").innerText="Price: "+price+" ฿"
 
 document.getElementById("confirmBooking").onclick = async function(){
 
+if(!liffReady || !lineUserId){
+alert("Please open this page inside LINE to complete booking.")
+return
+}
+
 const end = document.getElementById("endTime").value
 const name = document.getElementById("name").value.trim()
 const phone = document.getElementById("phone").value.trim()
@@ -427,6 +432,8 @@ price += 200
 }
 
 }
+
+console.log("Sending LINE ID:", lineUserId)
 
 await fetch(API,{
 method:"POST",
