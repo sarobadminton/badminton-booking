@@ -2,6 +2,7 @@ const API = "https://script.google.com/macros/s/AKfycbyf4-Y4ZbI8eBuokdPT0ZXdnmjH
 const LIFF_ID = "2009443961-MV2dzoDm"
 
 let lineUserId = ""
+let liffReady = false
 
 
 async function initLIFF(){
@@ -16,15 +17,13 @@ return
 }
 
 const profile = await liff.getProfile()
-
 lineUserId = profile.userId
+liffReady = true
 
 console.log("LINE USER:", lineUserId)
 
 }catch(err){
-
 console.log("LIFF ERROR:", err)
-
 }
 
 init()
@@ -32,6 +31,7 @@ init()
 }
 
 initLIFF()
+
 
 let selectedCourt
 let selectedStart
@@ -74,7 +74,6 @@ function formatDate(date){
 const d = new Date(date)
 return d.toISOString().split("T")[0]
 }
-
 
 
 function isBooked(court,date,time){
@@ -150,11 +149,9 @@ function nextBookedSlot(court,date,startIndex){
 const slots = generateSlots()
 
 for(let i=startIndex+1;i<slots.length;i++){
-
 if(isBooked(court,date,slots[i])){
 return i
 }
-
 }
 
 return slots.length
@@ -185,16 +182,10 @@ let slot=document.createElement("div")
 
 const hour = parseInt(t.split(":")[0])
 
-let price = 0
-if(hour >= 9 && hour < 16){
-price = 100
-}else{
-price = 200
-}
+let price = (hour>=9 && hour<16)?100:200
 
 slot.innerHTML = `
-${t}
-<br>
+${t}<br>
 <span class="slot-price">${price}฿</span>
 `
 
@@ -299,25 +290,15 @@ overlay.classList.remove("hidden")
 popup.classList.remove("hidden")
 
 remainingTime = 60
-const countdownEl = document.getElementById("countdown")
-
-countdownEl.innerText = "Time remaining: 01:00"
 
 countdownInterval = setInterval(()=>{
 
 remainingTime--
 
-let sec = String(remainingTime).padStart(2,"0")
-countdownEl.innerText = "Time remaining: 00:" + sec
-
-if(remainingTime <= 0){
-
+if(remainingTime<=0){
 clearInterval(countdownInterval)
-
 alert("Time expired. Slot released.")
-
 closePopup()
-
 }
 
 },1000)
@@ -332,25 +313,8 @@ clearInterval(countdownInterval)
 popup.classList.add("hidden")
 overlay.classList.add("hidden")
 
-const court = selectedCourt
-const start = selectedStart
-
-selectedCourt = null
-selectedStart = null
-
-if(court && start){
-
-fetch(API,{
-method:"POST",
-body:JSON.stringify({
-court:court,
-date:dateInput.value,
-start:start,
-status:"UNLOCK"
-})
-})
-
-}
+selectedCourt=null
+selectedStart=null
 
 loadBookings().then(renderTimeline)
 
@@ -363,7 +327,6 @@ overlay.onclick = closePopup
 document.getElementById("endTime").addEventListener("change",updatePrice)
 
 
-/* ----------- UPDATED PRICE ENGINE ----------- */
 
 function updatePrice(){
 
@@ -372,16 +335,10 @@ const end=document.getElementById("endTime").value
 const startHour=parseInt(selectedStart.split(":")[0])
 const endHour=parseInt(end.split(":")[0])
 
-let price = 0
+let price=0
 
-for(let h=startHour; h<endHour; h++){
-
-if(h >= 9 && h < 16){
-price += 100
-}else{
-price += 200
-}
-
+for(let h=startHour;h<endHour;h++){
+price += (h>=9 && h<16)?100:200
 }
 
 document.getElementById("price").innerText="Price: "+price+" ฿"
@@ -389,30 +346,38 @@ document.getElementById("price").innerText="Price: "+price+" ฿"
 }
 
 
-/* ----------- CONFIRM BOOKING ----------- */
 
 document.getElementById("confirmBooking").onclick = async function(){
 
+console.log("Confirm booking pressed")
+
 if(!lineUserId){
-alert("Please reopen this page from the LINE booking link.")
+
+try{
+const profile = await liff.getProfile()
+lineUserId = profile.userId
+}catch(e){
+alert("Please open booking from LINE again")
 return
+}
+
 }
 
 const end = document.getElementById("endTime").value
 const name = document.getElementById("name").value.trim()
 const phone = document.getElementById("phone").value.trim()
 
-if(name === ""){
+if(name===""){
 alert("Please enter your name")
 return
 }
 
-if(phone === ""){
+if(phone===""){
 alert("Please enter your phone number")
 return
 }
 
-const phoneRegex = /^0[0-9]{8,9}$/
+const phoneRegex=/^0[0-9]{8,9}$/
 
 if(!phoneRegex.test(phone)){
 alert("Phone number must start with 0 and be 9-10 digits")
@@ -422,21 +387,15 @@ return
 const startHour=parseInt(selectedStart.split(":")[0])
 const endHour=parseInt(end.split(":")[0])
 
-let price = 0
+let price=0
 
-for(let h=startHour; h<endHour; h++){
-
-if(h >= 9 && h < 16){
-price += 100
-}else{
-price += 200
+for(let h=startHour;h<endHour;h++){
+price += (h>=9 && h<16)?100:200
 }
 
-}
+console.log("Sending booking with LINE ID:",lineUserId)
 
-console.log("Sending LINE ID:", lineUserId)
-
-await fetch(API,{
+const res = await fetch(API,{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -448,49 +407,57 @@ start:selectedStart,
 end:end,
 name:name,
 phone:phone,
-lineUserId: lineUserId,
+lineUserId:lineUserId,
 price:price,
 status:"BOOKED"
 })
 })
-console.log("LINE ID SENT:", lineUserId)
-alert("Booking confirmed")
 
-closePopup()
+const result = await res.text()
+
+console.log("Server response:",result)
+
+if(result==="BOOKED"){
+alert("Booking confirmed")
+popup.classList.add("hidden")
+overlay.classList.add("hidden")
+await loadBookings()
+renderTimeline()
+}else{
+alert("Booking failed: "+result)
+}
 
 }
 
 
-/* -------- PHONE VALIDATION -------- */
 
 const phoneInput = document.getElementById("phone")
 const phoneError = document.getElementById("phoneError")
 
-phoneInput.addEventListener("input", function(){
+phoneInput.addEventListener("input",function(){
 
-const phone = phoneInput.value.trim()
+const phone=phoneInput.value.trim()
 
-if(phone === ""){
-phoneError.innerText = ""
+if(phone===""){
+phoneError.innerText=""
 return
 }
 
 if(!/^[0-9]*$/.test(phone)){
-phoneError.innerText = "Phone number must contain numbers only"
+phoneError.innerText="Phone number must contain numbers only"
 return
 }
 
 if(!phone.startsWith("0")){
-phoneError.innerText = "Phone number must start with 0"
+phoneError.innerText="Phone number must start with 0"
 return
 }
 
-if(phone.length < 9 || phone.length > 10){
-phoneError.innerText = "Phone number must be 9–10 digits"
+if(phone.length<9 || phone.length>10){
+phoneError.innerText="Phone number must be 9–10 digits"
 return
 }
 
-phoneError.innerText = ""
+phoneError.innerText=""
 
 })
-
