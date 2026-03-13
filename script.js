@@ -6,9 +6,12 @@ let liffReady = false
 
 async function initLIFF(){
 
-try{
-
 await liff.init({ liffId: LIFF_ID })
+
+if(!liff.isInClient()){
+alert("Please open this booking page inside the LINE app.")
+return
+}
 
 if(!liff.isLoggedIn()){
 liff.login()
@@ -19,13 +22,9 @@ const profile = await liff.getProfile()
 
 lineUserId = profile.userId
 
-console.log("LINE USER ID:", lineUserId)
-
 liffReady = true
 
-}catch(err){
-
-console.log("LIFF ERROR:", err)
+console.log("LINE USER:", lineUserId)
 
 }
 
