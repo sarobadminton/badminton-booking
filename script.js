@@ -1,5 +1,5 @@
 const API = "https://script.google.com/macros/s/AKfycbyf4-Y4ZbI8eBuokdPT0ZXdnmjHcBrq2nfOh_ciRM_xnRU4YmNjEIxCyFMZbtpVYwVI/exec"
-const LIFF_ID = "2009443961-9MZA1MY0"
+const LIFF_ID = "2009443961-MV2dzoDm"
 
 let lineUserId = ""
 let liffReady = false
