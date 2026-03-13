@@ -398,7 +398,8 @@ document.getElementById("price").innerText="Price: "+price+" ฿"
 document.getElementById("confirmBooking").onclick = async function(){
 
 if(!lineUserId){
-alert("Please open this page inside LINE to receive LINE confirmation message.")
+alert("Please reopen this page from the LINE booking link.")
+return
 }
 
 const end = document.getElementById("endTime").value
